@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+    <script
+      src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
+    <link rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css"
+      type="text/css" />
+  
+  
+      <script>
+  
+        mapboxgl.accessToken =
+          "pk.eyJ1IjoidGFzYml1bG9saXZlIiwiYSI6ImNsMWx0NDlrNTBlM2IzbWw4eHI0cnkwNDUifQ.VifWktynW5gDheBEqNYspg"
+  
+        navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
+          enableHighAccuracy: true
+        })
+  
+        function successLocation(position) {
+          setupMap([position.coords.longitude, position.coords.latitude])
+        }
+  
+        function calcRoute() {
+          //create request
+          var request = {
+            origin: document.getElementById("from").value,
+            destination: document.getElementById("to").value,
+            travelMode: google.maps.TravelMode.DRIVING, //WALKING, BYCYCLING, TRANSIT
+            unitSystem: google.maps.UnitSystem.IMPERIAL
+          }
+  
+          //pass the request to the route method
+          directionsService.route(request, function (result, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+  
+              //Get distance and time
+              const output = document.querySelector('#output');
+              output.innerHTML = "<div class='alert-info'>From: " + document.getElementById("from").value + ".<br />To: " + document.getElementById("to").value + ".<br /> Driving distance <i class='fas fa-road'></i> : " + result.routes[0].legs[0].distance.text + ".<br />Duration <i class='fas fa-hourglass-start'></i> : " + result.routes[0].legs[0].duration.text + ".</div>";
+  
+              //display route
+              directionsDisplay.setDirections(result);
+            } else {
+              //delete route from map
+              directionsDisplay.setDirections({ routes: [] });
+              //center map in London
+              map.setCenter(myLatLng);
+  
+              //show error message
+              output.innerHTML = "<div class='alert-danger'><i class='fas fa-exclamation-triangle'></i> Could not retrieve driving distance.</div>";
+            }
+          });
+  
+        }
+        function myFunction() {
+          document.getElementById("demo").innerHTML = output;
+        }
+  
+  
+        function errorLocation() {
+          setupMap([-2.24, 53.48])
+        }
+  
+        function setupMap(center) {
+          const map = new mapboxgl.Map({
+            container: "map",
+            style: "mapbox://styles/mapbox/streets-v11",
+            center: center,
+            zoom: 15
+          })
+  
+          const nav = new mapboxgl.NavigationControl()
+          map.addControl(nav)
+  
+          var directions = new MapboxDirections({
+            accessToken: mapboxgl.accessToken
+          })
+  
+          map.addControl(directions, "top-left")
+        }
+  
+  
+      </script>
+  
+    <title>Google Maps Clone</title>
+    <style>
+      body {
+        margin: 0;
+      }
+  
+      #map {
+        height: 80vh;
+        width: 80vw;
+      }
+    </style>
+    <!-- <script src="script.js" defer></script> -->
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+   
+  </body>
+</html>
