@@ -18,7 +18,7 @@ const Map3 = () => {
             style: 'mapbox://styles/mapbox/streets-v11',
             center: [lng, lat],
             zoom: zoom
-        });
+        }); 
     });
 
     useEffect(() => {
